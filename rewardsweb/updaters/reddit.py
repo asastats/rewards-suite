@@ -2,6 +2,7 @@
 
 import logging
 import re
+from urllib.parse import urlparse
 
 from praw import Reddit
 from praw.exceptions import ClientException, RedditAPIException
@@ -46,6 +47,10 @@ class RedditUpdater(BaseUpdater):
 
         :param url: Reddit URL generated from permalink
         :type url: str
+        :var parsed: URL parsed into components
+        :type parsed: namedtuple
+        :var hostname: provided URL's host name
+        :type hostname: str
         :var clean_url: Reddit URL without domain
         :type clean_url: str
         :var parts: Reddit URL parts collection
@@ -57,9 +62,10 @@ class RedditUpdater(BaseUpdater):
         :return: tuple of (submission_id, comment_id) where comment_id may be None
         :rtype: two-tuple
         """
-        if "reddit.com" in url:
-            # Remove the base URL prefix and split
-            clean_url = url.replace("https://reddit.com", "")
+        parsed = urlparse(url)
+        hostname = parsed.hostname.lower() if parsed.hostname else None
+        if hostname and (hostname == "reddit.com" or hostname.endswith(".reddit.com")):
+            clean_url = parsed.path
             parts = [p for p in clean_url.split("/") if p]
 
             # Find the 'comments' section

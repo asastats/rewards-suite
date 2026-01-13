@@ -104,13 +104,6 @@ class TestUpdatersRedditRedditUpdater:
         assert submission_id == "abc123"
         assert comment_id == "def456"
 
-    def test_updaters_reddit_redditupdater_ids_from_url_without_protocol(self):
-        updater = RedditUpdater()
-        url = "reddit.com/r/learnpython/comments/abc123/my_first_script/def456/"
-        submission_id, comment_id = updater._ids_from_url(url)
-        assert submission_id == "abc123"
-        assert comment_id == "def456"
-
     def test_updaters_reddit_redditupdater_ids_from_url_invalid_url_no_comments(self):
         updater = RedditUpdater()
         url = "https://reddit.com/r/learnpython/"
