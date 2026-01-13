@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 
 from rewardsbot.config import DISCORD_TOKEN, GUILD_IDS
+from updaters.base import BaseUpdater
 from updaters.discord import DiscordUpdater
 from utils.constants.core import DISCORD_EMOJIS
 
@@ -15,6 +16,9 @@ class TestUpdatersDiscordDiscordupdater:
     def setup_method(self):
         """Set up test method."""
         self.updater = DiscordUpdater()
+
+    def test_updaters_discord_discordupdater_is_subclass_of_baseupdater(self):
+        assert issubclass(DiscordUpdater, BaseUpdater)
 
     # # _parse_discord_url
     @pytest.mark.parametrize(

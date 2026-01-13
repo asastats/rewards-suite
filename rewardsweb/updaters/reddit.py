@@ -1,4 +1,4 @@
-"""Module containing class for retrieving and adding Reddit post and comments."""
+"""Module containing class for adding replies to Reddit posts and comments."""
 
 from trackers.models import Mention
 from updaters.base import BaseUpdater
@@ -10,12 +10,12 @@ class RedditUpdater(BaseUpdater):
     def add_reaction_to_message(self, url, reaction_name):
         """Add reaction to message.
 
-        NOTE: not implemented yet
-
         :param url: URL of the message to react to
         :type url: str
         :param reaction_name: name of the reaction to add (e.g. "duplicate")
         :type reaction_name: str
+        :return: Reddit doesn't implement emoji rections so we just return True
+        :rtype: Boolean
         """
         return True
 
@@ -28,6 +28,8 @@ class RedditUpdater(BaseUpdater):
         :type url: str
         :param text: text to reply with
         :type text: str
+        :return: True for success, False otherwise
+        :rtype: Boolean
         """
         return True
 

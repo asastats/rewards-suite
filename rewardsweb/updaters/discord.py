@@ -1,4 +1,4 @@
-"""Discord updater."""
+"""Module containing class for sending Discord messages."""
 
 import logging
 import re

@@ -1,11 +1,16 @@
 """Testing module for :py:mod:`updaters.reddit` module."""
 
+from updaters.base import BaseUpdater
 from updaters.reddit import RedditUpdater
 
 
 class TestUpdatersRedditRedditUpdater:
     """Testing class for :py:mod:`updaters.reddit.RedditUpdater` class."""
 
+    def test_updaters_reddit_redditupdater_is_subclass_of_baseupdater(self):
+        assert issubclass(RedditUpdater, BaseUpdater)
+
+    # # add_reaction_to_message
     def test_updaters_reddit_redditupdater_add_reaction_to_message_functionality(
         self,
     ):
@@ -13,11 +18,13 @@ class TestUpdatersRedditRedditUpdater:
             RedditUpdater().add_reaction_to_message("some_url", "some_reaction") is True
         )
 
+    # # add_reply_to_message
     def test_updaters_reddit_redditupdater_add_reply_to_message_functionality(
         self,
     ):
         assert RedditUpdater().add_reply_to_message("some_url", "some_text") is True
 
+    # # message_from_url
     def test_updaters_reddit_redditupdater_message_from_url_for_no_message_found(
         self, mocker
     ):

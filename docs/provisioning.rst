@@ -133,6 +133,10 @@ For debugging purpose, add `-vv` or `-vvvv` for more verbose output:
   ansible-playbook -vv --limit=testing site_playbook.yml
 
 
+In order to initially fetch issues from configured provider's platform,
+the GITHUB_TOKEN environment variable should be set.
+
+
 Upgrade system and project
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 

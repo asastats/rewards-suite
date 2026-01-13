@@ -1,4 +1,4 @@
-"""Module containing class for retrieving and adding Reddit post and comments."""
+"""Module containing class for sending Telegram replies and emoji reactions."""
 
 from trackers.models import Mention
 from updaters.base import BaseUpdater
@@ -16,6 +16,8 @@ class TelegramUpdater(BaseUpdater):
         :type url: str
         :param reaction_name: name of the reaction to add (e.g. "duplicate")
         :type reaction_name: str
+        :return: True for success, False otherwise
+        :rtype: Boolean
         """
         return True
 
@@ -28,6 +30,8 @@ class TelegramUpdater(BaseUpdater):
         :type url: str
         :param text: text to reply with
         :type text: str
+        :return: True for success, False otherwise
+        :rtype: Boolean
         """
         return True
 

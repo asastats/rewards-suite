@@ -1,11 +1,16 @@
 """Testing module for :py:mod:`updaters.telegram` module."""
 
+from updaters.base import BaseUpdater
 from updaters.telegram import TelegramUpdater
 
 
 class TestUpdatersTelegramTelegramUpdater:
     """Testing class for :py:mod:`updaters.telegram.TelegramUpdater` class."""
 
+    def test_updaters_telegram_telegramupdater_is_subclass_of_baseupdater(self):
+        assert issubclass(TelegramUpdater, BaseUpdater)
+
+    # # add_reaction_to_message
     def test_updaters_telegram_telegramupdater_add_reaction_to_message_functionality(
         self,
     ):
@@ -14,11 +19,13 @@ class TestUpdatersTelegramTelegramUpdater:
             is True
         )
 
+    # # add_reply_to_message
     def test_updaters_telegram_telegramupdater_add_reply_to_message_functionality(
         self,
     ):
         assert TelegramUpdater().add_reply_to_message("some_url", "some_text") is True
 
+    # # message_from_url
     def test_updaters_telegram_telegramupdater_message_from_url_for_no_message_found(
         self, mocker
     ):

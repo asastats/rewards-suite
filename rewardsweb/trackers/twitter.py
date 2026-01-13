@@ -38,7 +38,7 @@ class TwitterTracker(BaseMentionTracker):
 
         self.logger.info("Twitter tracker initialized")
         self.log_action(
-            "initialized", f"Tracking mentions for user ID:: {self.target_user_id}"
+            "initialized", f"Tracking mentions for user ID: {self.target_user_id}"
         )
 
     def _get_original_tweet_info(self, referenced_tweet_id):
