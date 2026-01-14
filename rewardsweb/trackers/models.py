@@ -123,6 +123,13 @@ class Mention(models.Model):
         ]
         ordering = ["-processed_at"]
 
+    def __str__(self):
+        """Return mention's instance string representation.
+
+        :return: str
+        """
+        return self.suggester + "@" + self.platform + " [" + self.item_id + "]"
+
 
 class MentionLogManager(models.Manager):
     """Social media mention log's data manager."""
@@ -155,3 +162,17 @@ class MentionLog(models.Model):
         """Define ordering of the log entries."""
 
         ordering = ["-timestamp"]
+
+    def __str__(self):
+        """Return mention log's instance string representation.
+
+        :return: str
+        """
+        return (
+            self.action
+            + "@"
+            + self.platform
+            + " ["
+            + self.timestamp.strftime("%d %b %H:%M")
+            + "]"
+        )

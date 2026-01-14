@@ -14,6 +14,7 @@ from core.models import (
     SocialPlatform,
     SuperuserLog,
 )
+from trackers.models import Mention, MentionLog
 
 admin.site.register(Profile)
 admin.site.register(Contributor)
@@ -24,6 +25,8 @@ admin.site.register(RewardType)
 admin.site.register(Reward)
 admin.site.register(Issue)
 admin.site.register(Contribution)
+admin.site.register(Mention)
+admin.site.register(MentionLog)
 
 
 @admin.register(SuperuserLog)

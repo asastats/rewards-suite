@@ -19,6 +19,7 @@ from core.models import (
     SocialPlatform,
     SuperuserLog,
 )
+from trackers.models import Mention, MentionLog
 
 
 class TestCoreAdmin:
@@ -38,9 +39,11 @@ class TestCoreAdmin:
                 mock.call(Reward),
                 mock.call(Issue),
                 mock.call(Contribution),
+                mock.call(Mention),
+                mock.call(MentionLog),
             ]
             mocked_register.assert_has_calls(calls, any_order=True)
-            assert mocked_register.call_count == 10
+            assert mocked_register.call_count == 12
 
 
 class TestCoreSuperuserLogAdmin:

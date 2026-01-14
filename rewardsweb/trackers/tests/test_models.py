@@ -149,6 +149,12 @@ class TestTrackersModelsMention:
         mention3 = Mention.objects.create(item_id="item_id3", raw_data={"1": "2"})
         assert list(Mention.objects.all()) == [mention3, mention2, mention1]
 
+    # # __str__
+    @pytest.mark.django_db
+    def test_trackers_mention_model_string_representation(self):
+        mention = Mention(item_id="506", platform="platform1", suggester="username")
+        assert str(mention) == "username@platform1 [506]"
+
 
 @pytest.mark.django_db
 class TestTrackersModelsMentionLogManager:
@@ -188,3 +194,13 @@ class TestTrackersModelsMentionLog:
         mentionlog2 = MentionLog.objects.create(platform="reddit", action="1")
         mentionlog3 = MentionLog.objects.create(platform="discord", action="1")
         assert list(MentionLog.objects.all()) == [mentionlog3, mentionlog2, mentionlog1]
+
+    # # __str__
+    @pytest.mark.django_db
+    def test_trackers_mentionlog_model_string_representation(self):
+        MentionLog.objects.create(platform="platform2", action="action1")
+        log = MentionLog.objects.last()
+        assert (
+            str(log)
+            == "action1@platform2 [" + log.timestamp.strftime("%d %b %H:%M") + "]"
+        )
