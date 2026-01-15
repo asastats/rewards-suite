@@ -493,7 +493,7 @@ class Cycle(models.Model):
     class Meta:
         """Define model's ordering."""
 
-        ordering = ["start"]
+        ordering = ["-start"]
 
     def __str__(self):
         """Return cycle's instance string representation.
@@ -849,7 +849,7 @@ class Contribution(models.Model):
     class Meta:
         """Define model's ordering."""
 
-        ordering = ["cycle", "created_at"]
+        ordering = ["cycle", "-created_at"]
 
     def __str__(self):
         """Return contribution's instance string representation.

@@ -1134,7 +1134,7 @@ class TestCoreCycleModel:
         cycle1 = Cycle.objects.create(start=datetime(2025, 3, 25))
         cycle2 = Cycle.objects.create(start=datetime(2025, 3, 22))
         cycle3 = Cycle.objects.create(start=datetime(2024, 4, 22))
-        assert list(Cycle.objects.all()) == [cycle3, cycle2, cycle1]
+        assert list(Cycle.objects.all()) == [cycle1, cycle2, cycle3]
 
     # # __str__
     @pytest.mark.django_db
@@ -3690,11 +3690,11 @@ class TestCoreContributionModel:
             contributor=contributor1, cycle=cycle2, platform=platform, reward=reward
         )
         assert list(Contribution.objects.all()) == [
-            contribution1,
-            contribution3,
-            contribution2,
-            contribution5,
             contribution4,
+            contribution5,
+            contribution2,
+            contribution3,
+            contribution1,
         ]
 
     # #  __str__
