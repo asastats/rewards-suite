@@ -40,18 +40,31 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
     "handlers": {
-        "file": {
+        "warning_file": {
             "level": "WARNING",
             "class": "logging.FileHandler",
-            "filename": BASE_DIR.parent.parent.parent / "logs" / "django-warning.log",
+            "filename": BASE_DIR.parent.parent.parent / "logs" / "django_warning.log",
+            "formatter": "standard",
+        },
+        "info_file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR.parent.parent.parent / "logs" / "django_info.log",
+            "formatter": "standard",
         },
     },
     "loggers": {
-        "django": {
-            "handlers": ["file"],
-            "level": "WARNING",
-            "propagate": True,
+        "": {  # Root logger
+            "handlers": ["warning_file", "info_file"],
+            "level": "INFO",
+            "propagate": False,
         },
     },
 }
