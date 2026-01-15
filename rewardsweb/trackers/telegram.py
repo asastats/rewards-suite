@@ -14,13 +14,13 @@ from trackers.base import BaseAsyncMentionTracker
 class TelegramTracker(BaseAsyncMentionTracker):
     """Tracker for Telegram mentions in specified groups/channels.
 
-    :param TelegramTracker.client: Telegram client instance
+    :var TelegramTracker.client: Telegram client instance
     :type TelegramTracker.client: :class:`telethon.TelegramClient` or None
-    :param TelegramTracker.bot_username: username of the bot account
+    :var TelegramTracker.bot_username: username of the bot account
     :type TelegramTracker.bot_username: str
-    :param TelegramTracker.tracked_chats: list of chats being monitored
+    :var TelegramTracker.tracked_chats: list of chats being monitored
     :type TelegramTracker.tracked_chats: list
-    :param TelegramTracker._is_connected: is client connected or not
+    :var TelegramTracker._is_connected: is client connected or not
     :type TelegramTracker._is_connected: Boolean
     """
 
@@ -194,20 +194,13 @@ class TelegramTracker(BaseAsyncMentionTracker):
         """Generate URL for a message.
 
         :param chat: Telegram chat object
-        :type chat: :class:`telethon.tl.types.Chat` or :class:`telethon.tl.types.Channel`
+        :type chat: :class:`telethon.tl.types.Chat`
         :param message_id: ID of the message
         :type message_id: int
-        :var chat_username: username of the chat/channel
-        :type chat_username: str or None
         :return: URL for the message
         :rtype: str
         """
-        chat_username = getattr(chat, "username", None)
-        if chat_username:
-            return f"https://t.me/{chat_username}/{message_id}"
-
-        else:
-            return f"chat_{chat.id}_msg_{message_id}"
+        return f"-{chat.id}/{message_id}"
 
     async def extract_mention_data(self, message):
         """Extract standardized data from a Telegram message.

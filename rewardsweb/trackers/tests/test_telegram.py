@@ -88,8 +88,8 @@ class TestTrackersTelegram:
         result = await instance.extract_mention_data(mock_message)
         # Updated assertions to match new implementation
         assert result["suggester"] == "testuser"  # Uses username first
-        assert result["suggestion_url"] == "https://t.me/testgroup/100"
-        assert result["contribution_url"] == "https://t.me/testgroup/99"
+        assert result["suggestion_url"] == "-67890/100"
+        assert result["contribution_url"] == "-67890/99"
         assert result["contributor"] == "replieduser"  # Uses username first
         assert result["type"] == "message"
         assert result["telegram_chat"] == "Test Group"
@@ -130,8 +130,8 @@ class TestTrackersTelegram:
         mock_chat.username = None  # No username
         mock_message.chat = mock_chat
         result = await instance.extract_mention_data(mock_message)
-        assert result["suggestion_url"] == "chat_67890_msg_100"
-        assert result["contribution_url"] == "chat_67890_msg_100"
+        assert result["suggestion_url"] == "-67890/100"
+        assert result["contribution_url"] == "-67890/100"
         assert result["contributor"] == "testuser"  # Uses username first
         assert result["contribution"] == "Hello @test_bot!"
 
@@ -1331,35 +1331,17 @@ class TestTrackersTelegram:
         assert result is None
         instance.client.get_messages.assert_called_once_with(123, ids=99)
 
-    def test_trackers_telegramtracker_generate_message_url_with_username(
+    def test_trackers_telegramtracker_generate_message_url_functionailty(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _generate_message_url with chat username."""
-        # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         mock_chat = mocker.MagicMock()
         mock_chat.id = 12345
-        mock_chat.username = "testchat"
         result = instance._generate_message_url(mock_chat, 100)
-        assert result == "https://t.me/testchat/100"
-
-    def test_trackers_telegramtracker_generate_message_url_no_username(
-        self, mocker, telegram_config, telegram_chats
-    ):
-        """Test _generate_message_url without chat username."""
-        # Mock TelegramClient
-        mocker.patch("trackers.telegram.TelegramClient")
-        instance = TelegramTracker(
-            lambda x, y=None: None, telegram_config, telegram_chats
-        )
-        mock_chat = mocker.MagicMock()
-        mock_chat.id = 12345
-        mock_chat.username = None
-        result = instance._generate_message_url(mock_chat, 100)
-        assert result == "chat_12345_msg_100"
+        assert result == "-12345/100"
 
     @pytest.mark.asyncio
     async def test_trackers_telegramtracker_post_init_setup(

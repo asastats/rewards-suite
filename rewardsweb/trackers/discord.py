@@ -173,17 +173,17 @@ class DiscordClientWrapper(IDiscordClientWrapper):
 class DiscordTracker(BaseAsyncMentionTracker):
     """Discord tracker for multiple servers/guilds with automatic channel discovery.
 
-    :param DiscordTracker.client: Discord client wrapper instance
+    :var DiscordTracker.client: Discord client wrapper instance
     :type DiscordTracker.client: :class:`IDiscordClientWrapper`
-    :param DiscordTracker.bot_user_id: user ID of the bot account
+    :var DiscordTracker.bot_user_id: user ID of the bot account
     :type DiscordTracker.bot_user_id: int
-    :param DiscordTracker.token: Discord bot's token
+    :var DiscordTracker.token: Discord bot's token
     :type DiscordTracker.token: str
-    :param DiscordTracker.tracked_guilds: list of guild IDs to monitor
+    :var DiscordTracker.tracked_guilds: list of guild IDs to monitor
     :type DiscordTracker.tracked_guilds: list
-    :param DiscordTracker.auto_discover_channels: whether to auto-discover channels
+    :var DiscordTracker.auto_discover_channels: whether to auto-discover channels
     :type DiscordTracker.auto_discover_channels: bool
-    :param DiscordTracker.excluded_channel_types: channel types to exclude
+    :var DiscordTracker.excluded_channel_types: channel types to exclude
     :type DiscordTracker.excluded_channel_types: list
     """
 
