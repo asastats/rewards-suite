@@ -200,7 +200,7 @@ class TelegramTracker(BaseAsyncMentionTracker):
         :return: URL for the message
         :rtype: str
         """
-        return f"-{chat.id}/{message_id}"
+        return f"https://t.me/c/-{chat.id}/{message_id}"
 
     async def extract_mention_data(self, message):
         """Extract standardized data from a Telegram message.

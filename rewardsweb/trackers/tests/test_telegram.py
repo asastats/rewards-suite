@@ -88,8 +88,8 @@ class TestTrackersTelegram:
         result = await instance.extract_mention_data(mock_message)
         # Updated assertions to match new implementation
         assert result["suggester"] == "testuser"  # Uses username first
-        assert result["suggestion_url"] == "-67890/100"
-        assert result["contribution_url"] == "-67890/99"
+        assert result["suggestion_url"] == "https://t.me/c/-67890/100"
+        assert result["contribution_url"] == "https://t.me/c/-67890/99"
         assert result["contributor"] == "replieduser"  # Uses username first
         assert result["type"] == "message"
         assert result["telegram_chat"] == "Test Group"
@@ -98,7 +98,6 @@ class TestTrackersTelegram:
         assert result["contribution"] == "This is the original message."
         assert result["timestamp"] == "2023-01-01T00:00:00"
 
-    @pytest.mark.asyncio
     @pytest.mark.asyncio
     async def test_trackers_telegramtracker_extract_mention_data_no_reply(
         self, mocker, telegram_config, telegram_chats
@@ -130,8 +129,8 @@ class TestTrackersTelegram:
         mock_chat.username = None  # No username
         mock_message.chat = mock_chat
         result = await instance.extract_mention_data(mock_message)
-        assert result["suggestion_url"] == "-67890/100"
-        assert result["contribution_url"] == "-67890/100"
+        assert result["suggestion_url"] == "https://t.me/c/-67890/100"
+        assert result["contribution_url"] == "https://t.me/c/-67890/100"
         assert result["contributor"] == "testuser"  # Uses username first
         assert result["contribution"] == "Hello @test_bot!"
 
@@ -139,7 +138,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_extract_mention_data_no_username(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test extract_mention_data when sender has no username."""
         # Mock the parent init to avoid API calls
         mocker.patch.object(TelegramTracker, "__init__", return_value=None)
         mocker.patch.object(TelegramTracker, "log_action_async")
@@ -175,7 +173,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_extract_mention_data_no_username_or_display(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test extract_mention_data when sender has neither username nor display_name."""
         # Mock the parent init to avoid API calls
         mocker.patch.object(TelegramTracker, "__init__", return_value=None)
         mocker.patch.object(TelegramTracker, "log_action_async")
@@ -211,25 +208,21 @@ class TestTrackersTelegram:
     def test_trackers_telegramtracker_check_mentions(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test check_mentions method."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance._is_connected = True
-
         # Mock async methods
         mocker.patch.object(instance, "_ensure_connected")
         mocker.patch.object(instance, "check_mentions_async", return_value=3)
-
         result = instance.check_mentions()
         assert result == 3
 
     def test_trackers_telegramtracker_check_mentions_no_connection(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test check_mentions when not connected."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         mocker.patch("trackers.telegram.TelegramTracker.log_action_async")
@@ -237,13 +230,11 @@ class TestTrackersTelegram:
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance._is_connected = False
-
         # Mock _ensure_connected to raise exception
         mocker.patch.object(
             instance, "_ensure_connected", side_effect=Exception("Connection failed")
         )
         instance.logger = mocker.MagicMock()
-
         result = instance.check_mentions()
         assert result == 0
         instance.logger.error.assert_called()
@@ -251,16 +242,13 @@ class TestTrackersTelegram:
     def test_trackers_telegramtracker_check_mentions_no_client(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test check_mentions when self.client is None (early exit)."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.logger = mocker.MagicMock()
         instance.client = None  # Explicitly set client to None
-
         result = instance.check_mentions()
-
         assert result == 0
         instance.logger.error.assert_called_once_with("Telegram client not available")
 
@@ -268,7 +256,6 @@ class TestTrackersTelegram:
     def test_trackers_telegramtracker_run_no_client(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test run method when client is None."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -287,7 +274,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_run_async_connect_and_exit(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test successful connection and immediate exit from the polling loop."""
         # Mock TelegramClient (still needed for init)
         mocker.patch("trackers.telegram.TelegramClient")
         mocker.patch("trackers.telegram.TelegramTracker.log_action_async")
@@ -297,7 +283,6 @@ class TestTrackersTelegram:
         instance.client = mocker.MagicMock()
         instance._is_connected = False
         instance.logger = mocker.MagicMock()
-
         # Mock async methods - use AsyncMock
         mock_ensure_connected = mocker.patch.object(
             instance, "_ensure_connected", new_callable=mocker.AsyncMock
@@ -312,11 +297,9 @@ class TestTrackersTelegram:
         mock_cleanup = mocker.patch.object(
             instance, "cleanup", new_callable=mocker.AsyncMock
         )
-
         # Run the async method. We expect it to be cancelled almost immediately.
         with pytest.raises(asyncio.CancelledError):
             await instance.run_async(poll_interval_minutes=0.01)
-
         # Assertions
         mock_ensure_connected.assert_called_once()
         mock_check_mentions.assert_called_once()
@@ -326,16 +309,13 @@ class TestTrackersTelegram:
     def test_trackers_telegramtracker_run_no_client_config(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test run() when client is not available (early exit)."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.client = None
         instance.logger = mocker.MagicMock()
-
         instance.run()
-
         instance.logger.error.assert_called_once_with(
             "Cannot start Telegram tracker - client not available"
         )
@@ -343,7 +323,6 @@ class TestTrackersTelegram:
     def test_trackers_telegramtracker_run_keyboardinterrupt(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test synchronous run method when KeyboardInterrupt occurs during run_until_complete."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -351,32 +330,24 @@ class TestTrackersTelegram:
         )
         instance.client = mocker.MagicMock()
         instance.logger = mocker.MagicMock()
-
         # Mock event loop related calls
         mock_loop = mocker.MagicMock()
         mocker.patch("asyncio.new_event_loop", return_value=mock_loop)
         mocker.patch("asyncio.set_event_loop")
-
         # Mock run_async (its return value is the coroutine passed to run_until_complete)
         mocker.patch.object(instance, "run_async", new_callable=mocker.AsyncMock)
-
         mock_cleanup = mocker.patch.object(
             instance, "cleanup", new_callable=mocker.AsyncMock
         )
-
         # Mock run_until_complete to raise KeyboardInterrupt on the first call (for run_async)
         # and return None on the second call (for cleanup).
         mock_loop.run_until_complete.side_effect = [KeyboardInterrupt(), None]
-
         # Reset the logger before running to isolate this test's logging
         instance.logger.info.reset_mock()
-
         # run() catches the synchronous KeyboardInterrupt
         instance.run(poll_interval_minutes=0.01)
-
         # Assert KeyboardInterrupt was caught and logged
         instance.logger.info.assert_called_once_with("Telegram tracker stopped by user")
-
         # Assert the cleanup coroutine was run and the loop was closed
         mock_cleanup.assert_called_once()
         mock_loop.close.assert_called_once()
@@ -386,7 +357,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_chat_mentions_no_chat(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _check_chat_mentions when chat entity is None."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -403,7 +373,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_chat_mentions_success(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _check_chat_mentions successful message processing."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -445,7 +414,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_chat_mentions_exception(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _check_chat_mentions exception handling."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -472,7 +440,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_chat_mentions_condition_not_met(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _check_chat_mentions when mention condition is not met."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -504,7 +471,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_chat_mentions_already_processed(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _check_chat_mentions when message is already processed."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -538,7 +504,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_chat_mentions_process_mention_false(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _check_chat_mentions when process_mention returns False."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -571,7 +536,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_chat_mentions_no_bot_username(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _check_chat_mentions when bot_username is empty."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -604,7 +568,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_chat_mentions_message_no_text(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _check_chat_mentions when message has no text."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -636,7 +599,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_chat_mentions_bot_not_mentioned(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _check_chat_mentions when bot username not in message."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -669,7 +631,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_mentions_async_no_connection(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test check_mentions_async when not connected."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -684,7 +645,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_mentions_async_success(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test check_mentions_async successful execution with multiple chats."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -716,7 +676,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_mentions_async_empty_chats(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test check_mentions_async with empty tracked_chats list."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -742,7 +701,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_mentions_async_single_chat(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test check_mentions_async with single chat."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -775,7 +733,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_check_mentions_async_three_chats(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test check_mentions_async with three chats."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -809,7 +766,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_chat_entity_success(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_chat_entity successful chat retrieval."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -828,7 +784,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_chat_entity_exception(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_chat_entity exception handling."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -849,21 +804,17 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_chat_entity_success_by_username(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_chat_entity success when identifier is a standard username."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.client = mocker.MagicMock()
         mock_entity = mocker.MagicMock()
-
         # Mock get_entity to succeed on first call
         mock_get_entity = mocker.AsyncMock(return_value=mock_entity)
         instance.client.get_entity = mock_get_entity
-
         username = "@some_channel_name"
         result = await instance._get_chat_entity(username)
-
         mock_get_entity.assert_called_once_with(username)
         assert result == mock_entity
 
@@ -877,7 +828,6 @@ class TestTrackersTelegram:
         )
         instance.client = mocker.MagicMock()
         mock_entity = mocker.MagicMock()
-
         # Mock get_entity: first call raises ValueError, second succeeds
         mock_get_entity = mocker.AsyncMock()
         mock_get_entity.side_effect = [
@@ -885,10 +835,8 @@ class TestTrackersTelegram:
             mock_entity,  # Second call with int conversion
         ]
         instance.client.get_entity = mock_get_entity
-
         string_id = "-10012345678"
         result = await instance._get_chat_entity(string_id)
-
         # Should be called twice: first with string, second with int
         mock_get_entity.assert_has_calls(
             [
@@ -908,7 +856,6 @@ class TestTrackersTelegram:
         )
         instance.client = mocker.MagicMock()
         mock_entity = mocker.MagicMock()
-
         # Mock get_entity: first call raises ValueError, second succeeds
         mock_get_entity = mocker.AsyncMock()
         mock_get_entity.side_effect = [
@@ -916,10 +863,8 @@ class TestTrackersTelegram:
             mock_entity,  # Second call with same int
         ]
         instance.client.get_entity = mock_get_entity
-
         int_id = 12345678
         result = await instance._get_chat_entity(int_id)
-
         # Should be called twice: both with the same integer
         mock_get_entity.assert_has_calls(
             [
@@ -939,7 +884,6 @@ class TestTrackersTelegram:
         )
         instance.client = mocker.MagicMock()
         instance.logger = mocker.MagicMock()
-
         # Mock get_entity: first raises ValueError, second raises another exception (caught silently)
         mock_get_entity = mocker.AsyncMock()
         mock_get_entity.side_effect = [
@@ -947,13 +891,10 @@ class TestTrackersTelegram:
             Exception("Peer ID invalid"),  # Second call - caught by inner except
         ]
         instance.client.get_entity = mock_get_entity
-
         identifier = "-12345"
         result = await instance._get_chat_entity(identifier)
-
         # Should return None
         assert result is None
-
         # Outer exception logger should NOT be called (only for general exceptions)
         instance.logger.error.assert_not_called()
 
@@ -967,19 +908,15 @@ class TestTrackersTelegram:
         )
         instance.client = mocker.MagicMock()
         instance.logger = mocker.MagicMock()
-
         # Mock get_entity to raise ValueError
         mock_get_entity = mocker.AsyncMock(side_effect=ValueError("Not a username"))
         instance.client.get_entity = mock_get_entity
-
         # Non-digit string that can't be converted to int
         identifier = "@invalid_chat_name"
         result = await instance._get_chat_entity(identifier)
-
         # Should be called once and return None
         mock_get_entity.assert_called_once_with(identifier)
         assert result is None
-
         # Outer exception logger should NOT be called
         instance.logger.error.assert_not_called()
 
@@ -993,16 +930,13 @@ class TestTrackersTelegram:
         )
         instance.client = mocker.MagicMock()
         instance.logger = mocker.MagicMock()
-
         # Mock get_entity to raise a general Exception (not ValueError)
         mock_get_entity = mocker.AsyncMock(
             side_effect=Exception("API connection failed")
         )
         instance.client.get_entity = mock_get_entity
-
         identifier = "@some_username"
         result = await instance._get_chat_entity(identifier)
-
         assert result is None
         instance.logger.error.assert_called_once_with(
             f"Error getting chat entity for {identifier}: API connection failed"
@@ -1012,21 +946,17 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_chat_entity_empty_string(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_chat_entity with empty string identifier."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.client = mocker.MagicMock()
         instance.logger = mocker.MagicMock()
-
         # Mock get_entity to raise ValueError for empty string
         mock_get_entity = mocker.AsyncMock(side_effect=ValueError("Empty string"))
         instance.client.get_entity = mock_get_entity
-
         identifier = ""
         result = await instance._get_chat_entity(identifier)
-
         mock_get_entity.assert_called_once_with(identifier)
         assert result is None
 
@@ -1034,20 +964,16 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_chat_entity_none_value(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_chat_entity with None identifier."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.client = mocker.MagicMock()
         instance.logger = mocker.MagicMock()
-
         # Mock get_entity
         mock_get_entity = mocker.AsyncMock()
         instance.client.get_entity = mock_get_entity
-
         await instance._get_chat_entity(None)
-
         # Should call get_entity with None and likely raise an exception
         mock_get_entity.assert_called_once_with(None)
         # The exact behavior depends on Telethon's handling of None
@@ -1056,33 +982,25 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_chat_entity_success_by_string_id(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_chat_entity fallthrough success on string ID (e.g., '-10012345678')."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.client = mocker.MagicMock()
         mock_entity = mocker.MagicMock()
-
         # Explicitly patch the method as AsyncMock for cleaner side_effect handling
         mock_get_entity = mocker.patch.object(
             instance.client, "get_entity", new_callable=mocker.AsyncMock
         )
-
         # Mocking: First get_entity raises ValueError, second call (with int) succeeds
         mock_get_entity.side_effect = [
             ValueError("Not a username"),
             mock_entity,
         ]
-
         result = await instance._get_chat_entity("-10012345678")
-
         # Assert the fallthrough logic was executed correctly
         mock_get_entity.assert_has_calls(
-            [
-                mocker.call("-10012345678"),
-                mocker.call(-10012345678),
-            ]
+            [mocker.call("-10012345678"), mocker.call(-10012345678)]
         )
         assert result == mock_entity
 
@@ -1090,53 +1008,40 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_chat_entity_success_by_int_id(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_chat_entity fallthrough success on integer ID."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.client = mocker.MagicMock()
         mock_entity = mocker.MagicMock()
-
         # Explicitly patch the method as AsyncMock for cleaner side_effect handling
         mock_get_entity = mocker.patch.object(
             instance.client, "get_entity", new_callable=mocker.AsyncMock
         )
-
         # Mocking: First get_entity raises ValueError, second call succeeds
         mock_get_entity.side_effect = [
             ValueError("Not a username"),
             mock_entity,
         ]
-
         result = await instance._get_chat_entity(12345678)
-
         # Assert the fallthrough logic was executed correctly
-        mock_get_entity.assert_has_calls(
-            [
-                mocker.call(12345678),
-                mocker.call(12345678),
-            ]
-        )
+        mock_get_entity.assert_has_calls([mocker.call(12345678), mocker.call(12345678)])
         assert result == mock_entity
 
     @pytest.mark.asyncio
     async def test_trackers_telegramtracker_get_chat_entity_failure_by_id_silently_caught(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_chat_entity when lookup by ID fails with a silently-caught inner exception."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.client = mocker.MagicMock()
         instance.logger = mocker.MagicMock()
-
         # Explicitly patch the method as AsyncMock
         mock_get_entity = mocker.patch.object(
             instance.client, "get_entity", new_callable=mocker.AsyncMock
         )
-
         # Mocking: First raises ValueError, second raises an Exception (caught by inner except)
         mock_get_entity.side_effect = [
             ValueError("Not a username"),
@@ -1144,9 +1049,7 @@ class TestTrackersTelegram:
                 "Peer ID invalid"
             ),  # This exception is caught by `except Exception: pass`
         ]
-
         result = await instance._get_chat_entity("-12345")
-
         assert result is None
         # Assert the outer exception logger was NOT called
         instance.logger.error.assert_not_called()
@@ -1155,35 +1058,29 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_chat_entity_failure_by_general_exception(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_chat_entity when initial lookup fails with a general Exception (logged)."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.client = mocker.MagicMock()
         instance.logger = mocker.MagicMock()
-
         # Explicitly patch the method as AsyncMock
         mock_get_entity = mocker.patch.object(
             instance.client, "get_entity", new_callable=mocker.AsyncMock
         )
-
         # Mocking: The initial get_entity call raises a general Exception (not ValueError)
         mock_get_entity.side_effect = Exception("API connection failed")
-
         result = await instance._get_chat_entity("@some_username")
-
         assert result is None
         instance.logger.error.assert_called_once_with(
             "Error getting chat entity for @some_username: API connection failed"
         )
 
-    # Other helper methods
+    # # _get_sender_info
     @pytest.mark.asyncio
     async def test_trackers_telegramtracker_get_sender_info_success(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_sender_info successful retrieval."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -1205,7 +1102,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_sender_info_exception(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_sender_info exception handling."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -1225,7 +1121,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_sender_info_no_sender(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_sender_info when get_sender returns None."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -1245,7 +1140,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_replied_message_info_success(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_replied_message_info successful retrieval."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -1278,7 +1172,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_replied_message_info_no_reply(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_replied_message_info when no reply exists."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -1293,7 +1186,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_replied_message_info_no_replied_message(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_replied_message_info when get_messages returns None."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -1313,7 +1205,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_get_replied_message_info_exception(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _get_replied_message_info exception handling."""
         # Mock TelegramClient
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
@@ -1331,6 +1222,7 @@ class TestTrackersTelegram:
         assert result is None
         instance.client.get_messages.assert_called_once_with(123, ids=99)
 
+    # # _generate_message_url
     def test_trackers_telegramtracker_generate_message_url_functionailty(
         self, mocker, telegram_config, telegram_chats
     ):
@@ -1341,13 +1233,13 @@ class TestTrackersTelegram:
         mock_chat = mocker.MagicMock()
         mock_chat.id = 12345
         result = instance._generate_message_url(mock_chat, 100)
-        assert result == "-12345/100"
+        assert result == "https://t.me/c/-12345/100"
 
+    # # _post_init_setup
     @pytest.mark.asyncio
     async def test_trackers_telegramtracker_post_init_setup(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _post_init_setup method."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
@@ -1358,11 +1250,11 @@ class TestTrackersTelegram:
             "initialized", f"Tracking {len(telegram_chats)} chats"
         )
 
+    # # cleanup
     @pytest.mark.asyncio
     async def test_trackers_telegramtracker_cleanup_connected(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test cleanup method when client is connected."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
@@ -1380,7 +1272,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_cleanup_success(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test successful cleanup."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
@@ -1388,13 +1279,10 @@ class TestTrackersTelegram:
         instance.client = mocker.MagicMock()
         instance._is_connected = True
         instance.logger = mocker.MagicMock()
-
         # Mock disconnect as AsyncMock
         mock_disconnect = mocker.AsyncMock()
         instance.client.disconnect = mock_disconnect
-
         await instance.cleanup()
-
         mock_disconnect.assert_called_once()
         assert instance._is_connected is False
 
@@ -1402,39 +1290,33 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_cleanup_not_connected(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test cleanup when client is not connected."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.client = mocker.MagicMock()
         instance._is_connected = False
-
         await instance.cleanup()
-
         instance.client.disconnect.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_trackers_telegramtracker_cleanup_no_client(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test cleanup when client is None."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.client = None
         instance._is_connected = False
-
         await instance.cleanup()
-
         # Should not raise an error
 
+    # # is_processed_async
     @pytest.mark.asyncio
     async def test_trackers_telegramtracker_is_processed_async(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test is_processed_async method."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
@@ -1446,33 +1328,27 @@ class TestTrackersTelegram:
         assert result is True
         mock_is_processed.assert_called_once_with("some_id")
 
+    # # process_mention_async
     @pytest.mark.asyncio
     async def test_trackers_telegramtracker_process_mention_async(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test process_mention_async method."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: {"parsed": "data"}, telegram_config, telegram_chats
         )
-
         # Mock the parent class's process_mention method which is called by process_mention_async
         mocker.patch.object(
             BaseAsyncMentionTracker, "process_mention", return_value=True
         )
-
         # Mock is_processed_async to return False
         mocker.patch.object(instance, "is_processed_async", return_value=False)
-
         # Mock post_new_contribution_async
         mocker.patch.object(instance, "post_new_contribution_async", return_value={})
-
         # Mock mark_processed_async
         mocker.patch.object(instance, "mark_processed_async")
-
         # Mock log_action_async
         mocker.patch.object(instance, "log_action_async")
-
         result = await instance.process_mention_async(
             "some_id", {"content": "test"}, "user"
         )
@@ -1483,24 +1359,19 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_ensure_connected_success(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test successful connection."""
         # 1. Patch the TelegramClient class and capture its mock return value
         mock_client_class = mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
-
         # 2. Get the mock instance assigned to instance.client
         mock_client_instance = mock_client_class.return_value
-
         # 3. Setup and assign the dedicated AsyncMock for the methods
         mock_connect = mocker.AsyncMock()
         mock_is_user_authorized = mocker.AsyncMock(return_value=True)
         mock_client_instance.connect = mock_connect
         mock_client_instance.is_user_authorized = mock_is_user_authorized
-
         instance._is_connected = False
-
         # Mock _get_chat_entity
         mock_entity = mocker.MagicMock(id=1234)
         mocker.patch.object(
@@ -1509,9 +1380,7 @@ class TestTrackersTelegram:
             new_callable=mocker.AsyncMock,
             return_value=mock_entity,
         )
-
         await instance._ensure_connected()
-
         # Assertions
         mock_connect.assert_called_once()
         mock_is_user_authorized.assert_called_once()
@@ -1521,81 +1390,62 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_ensure_connected_password_error(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test connection failure due to SessionPasswordNeededError."""
         mock_client_class = mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.logger = mocker.MagicMock()
-
         # Get the mock instance
         mock_client_instance = mock_client_class.return_value
-
         # Setup and assign the dedicated AsyncMock for methods
         mock_connect = mocker.AsyncMock()
         mock_is_user_authorized = mocker.AsyncMock(return_value=False)
         mock_send_code_request = mocker.AsyncMock()
-
         # First sign_in raises SessionPasswordNeededError, second succeeds
         mock_sign_in = mocker.AsyncMock()
         mock_sign_in.side_effect = [
             SessionPasswordNeededError("Need password"),  # First call
             None,  # Second call with password
         ]
-
         mock_client_instance.connect = mock_connect
         mock_client_instance.is_user_authorized = mock_is_user_authorized
         mock_client_instance.send_code_request = mock_send_code_request
         mock_client_instance.sign_in = mock_sign_in
-
         instance._is_connected = False
-
         # Mock input to avoid hanging - need two inputs (phone/code) then password
         input_calls = ["123456789", "123456", "2fapassword"]
         mocker.patch("builtins.input", side_effect=input_calls)
-
         await instance._ensure_connected()
-
         # Assertions
         mock_connect.assert_called_once()
         mock_is_user_authorized.assert_called_once()
         mock_send_code_request.assert_called_once()
-
         # Check sign_in was called twice
         assert mock_sign_in.call_count == 2
-
         # First call with phone and code
         mock_sign_in.assert_any_call("123456789", "123456")
-
         # Second call with password only
         mock_sign_in.assert_any_call(password="2fapassword")
-
         assert instance._is_connected is True
 
     @pytest.mark.asyncio
     async def test_trackers_telegramtracker_ensure_connected_general_error(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test connection failure due to a general exception."""
         mock_client_class = mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance.logger = mocker.MagicMock()
-
         # Get the mock instance
         mock_client_instance = mock_client_class.return_value
-
         # Setup and assign the dedicated AsyncMock for connect
         mock_connect = mocker.AsyncMock(side_effect=Exception("General API error"))
         mock_client_instance.connect = mock_connect
-
         instance._is_connected = False
-
         # The method should raise the exception
         with pytest.raises(Exception, match="General API error"):
             await instance._ensure_connected()
-
         # Assertions
         mock_connect.assert_called_once()
         instance.logger.error.assert_called_once_with(
@@ -1607,7 +1457,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_ensure_connected_already_connected(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _ensure_connected when already connected."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
@@ -1616,7 +1465,6 @@ class TestTrackersTelegram:
         instance.client = mocker.MagicMock()
         mock_connect = mocker.AsyncMock()
         instance.client.connect = mock_connect
-
         await instance._ensure_connected()
         mock_connect.assert_not_called()
 
@@ -1624,7 +1472,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_ensure_connected_authorization_needed(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _ensure_connected when authorization is needed."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
@@ -1634,10 +1481,8 @@ class TestTrackersTelegram:
         instance.client.is_user_authorized = mocker.AsyncMock(return_value=False)
         instance.client.send_code_request = mocker.AsyncMock()
         instance.client.sign_in = mocker.AsyncMock()
-
         # Mock input to avoid hanging in tests
         mocker.patch("builtins.input", side_effect=["123456789", "12345"])
-
         await instance._ensure_connected()
         assert instance._is_connected is True
         instance.client.connect.assert_called_once()
@@ -1647,7 +1492,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_ensure_connected_session_password(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _ensure_connected with session password needed."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
@@ -1659,12 +1503,10 @@ class TestTrackersTelegram:
         # Create a proper SessionPasswordNeededError instance
         session_error = SessionPasswordNeededError(request=mocker.MagicMock())
         instance.client.sign_in = mocker.AsyncMock(side_effect=[session_error, None])
-
         # Mock input to avoid hanging in tests
         mocker.patch(
             "builtins.input", side_effect=["123456789", "12345", "2fapassword"]
         )
-
         await instance._ensure_connected()
         assert instance._is_connected is True
         instance.client.connect.assert_called_once()
@@ -1673,7 +1515,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_ensure_connected_exception(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test _ensure_connected exception handling."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
@@ -1683,7 +1524,6 @@ class TestTrackersTelegram:
             side_effect=Exception("Connection failed")
         )
         instance.logger = mocker.MagicMock()
-
         with pytest.raises(Exception, match="Connection failed"):
             await instance._ensure_connected()
         assert instance._is_connected is False
@@ -1694,13 +1534,11 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_run_async_success(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test run_async successful execution."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance._is_connected = False
-
         # Mock dependencies
         mock_ensure = mocker.patch.object(instance, "_ensure_connected")
         mock_log_action = mocker.patch.object(instance, "log_action_async")
@@ -1717,11 +1555,9 @@ class TestTrackersTelegram:
             instance.exit_signal = True
 
         mock_sleep.side_effect = set_exit_signal
-
         await instance.run_async(
             poll_interval_minutes=1
         )  # Use integer to avoid float issues
-
         mock_ensure.assert_called_once()
         mock_log_action.assert_called_with(
             "started", f"Tracking {len(telegram_chats)} chats"
@@ -1733,18 +1569,15 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_run_async_mentions_found(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test run_async when mentions are found."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance._is_connected = False
         instance.logger = mocker.MagicMock()
-
         # Mock dependencies
         mocker.patch.object(instance, "_ensure_connected")
         mocker.patch.object(instance, "log_action_async")
-
         # Return 3 mentions on first check, then set exit_signal
         check_count = 0
 
@@ -1758,11 +1591,9 @@ class TestTrackersTelegram:
 
         mocker.patch.object(instance, "check_mentions_async", side_effect=mock_check)
         mocker.patch("asyncio.sleep")
-
         await instance.run_async(
             poll_interval_minutes=1
         )  # Use integer to avoid float issues
-
         # Should log that mentions were found
         instance.logger.info.assert_any_call("Found 3 new mentions")
 
@@ -1770,7 +1601,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_run_async_cancelled(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test run_async when cancelled."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
@@ -1778,15 +1608,12 @@ class TestTrackersTelegram:
         instance._is_connected = False
         instance.client = mocker.MagicMock()
         instance.logger = mocker.MagicMock()
-
         # Mock _ensure_connected to avoid actual connection
         mocker.patch.object(
             instance, "_ensure_connected", new_callable=mocker.AsyncMock
         )
-
         # Mock log_action_async
         mocker.patch.object(instance, "log_action_async", new_callable=mocker.AsyncMock)
-
         # Mock check_mentions_async to raise CancelledError immediately
         mocker.patch.object(
             instance,
@@ -1794,45 +1621,37 @@ class TestTrackersTelegram:
             new_callable=mocker.AsyncMock,
             side_effect=asyncio.CancelledError(),
         )
-
         # Mock cleanup
         mocker.patch.object(instance, "cleanup", new_callable=mocker.AsyncMock)
-
         # Should raise CancelledError (due to re-raise in run_async's except block)
         with pytest.raises(asyncio.CancelledError):
             await instance.run_async(poll_interval_minutes=1)
-
         instance.logger.info.assert_any_call("Telegram tracker cancelled")
 
     @pytest.mark.asyncio
     async def test_trackers_telegramtracker_run_async_exception(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test run_async when exception occurs."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
         )
         instance._is_connected = False
         instance.logger = mocker.MagicMock()
-
         # Mock dependencies
         mocker.patch.object(instance, "_ensure_connected")
         mocker.patch.object(instance, "log_action_async")
         mock_cleanup = mocker.patch.object(
             instance, "cleanup", new_callable=mocker.AsyncMock
         )
-
         mocker.patch.object(
             instance,
             "check_mentions_async",
             new_callable=mocker.AsyncMock,
             side_effect=Exception("Test error"),
         )
-
         with pytest.raises(Exception, match="Test error"):
             await instance.run_async(poll_interval_minutes=1)
-
         instance.logger.error.assert_called_once_with(
             "Telegram tracker error: Test error"
         )
@@ -1842,7 +1661,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_run_async_no_client(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test run_async when self.client is None (early exit)."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
@@ -1852,9 +1670,7 @@ class TestTrackersTelegram:
         mock_cleanup = mocker.patch.object(
             instance, "cleanup", new_callable=mocker.AsyncMock
         )
-
         await instance.run_async(poll_interval_minutes=1)
-
         # Should log error and return immediately, skipping the cleanup finally block
         instance.logger.error.assert_called_once_with("Telegram client not available")
         mock_cleanup.assert_not_called()
@@ -1863,7 +1679,6 @@ class TestTrackersTelegram:
     async def test_trackers_telegramtracker_run_async_keyboardinterrupt(
         self, mocker, telegram_config, telegram_chats
     ):
-        """Test run_async when a KeyboardInterrupt occurs (caught branch)."""
         mocker.patch("trackers.telegram.TelegramClient")
         instance = TelegramTracker(
             lambda x, y=None: None, telegram_config, telegram_chats
@@ -1871,13 +1686,11 @@ class TestTrackersTelegram:
         instance._is_connected = False
         instance.client = mocker.MagicMock()
         instance.logger = mocker.MagicMock()
-
         # Mock dependencies
         mocker.patch.object(
             instance, "_ensure_connected", new_callable=mocker.AsyncMock
         )
         mocker.patch.object(instance, "log_action_async", new_callable=mocker.AsyncMock)
-
         # Mock check_mentions_async to raise KeyboardInterrupt immediately
         mocker.patch.object(
             instance,
@@ -1885,14 +1698,11 @@ class TestTrackersTelegram:
             new_callable=mocker.AsyncMock,
             side_effect=KeyboardInterrupt(),
         )
-
         mock_cleanup = mocker.patch.object(
             instance, "cleanup", new_callable=mocker.AsyncMock
         )
-
         # run_async catches KeyboardInterrupt and logs it
         await instance.run_async(poll_interval_minutes=1)
-
         # Assert the KeyboardInterrupt was caught and logged
         instance.logger.info.assert_any_call("Telegram tracker stopped by user")
         # Assert cleanup was called in the finally block

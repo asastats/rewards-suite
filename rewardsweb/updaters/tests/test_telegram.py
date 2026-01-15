@@ -351,22 +351,22 @@ class TestUpdatersTelegramTelegramUpdater:
         mocker.patch("updaters.telegram.TelegramClient")
         instance = TelegramUpdater()
         with pytest.raises(ValueError):
-            instance._parse_message_url("-a1/567")
+            instance._parse_message_url("https://t.me/c/-a1/567")
 
     def test_updaters_telegram_telegramupdater_parse_message_url_for_no_message(
         self, mocker
     ):
         mocker.patch("updaters.telegram.TelegramClient")
         instance = TelegramUpdater()
-        with pytest.raises(IndexError):
-            instance._parse_message_url("1234")
+        with pytest.raises(ValueError):
+            instance._parse_message_url("https://t.me/c/-1234")
 
     def test_updaters_telegram_telegramupdater_parse_message_url_functionality(
         self, mocker
     ):
         mocker.patch("updaters.telegram.TelegramClient")
         instance = TelegramUpdater()
-        returned = instance._parse_message_url("-1234/567")
+        returned = instance._parse_message_url("https://t.me/c/-1234/567")
         assert returned == (-1234, 567)
 
     # # _process_action

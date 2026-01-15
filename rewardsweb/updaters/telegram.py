@@ -121,8 +121,8 @@ class TelegramUpdater(BaseUpdater):
         :rtype: two-tuple
         """
         parts = url.split("/")
-        chat_id = int(parts[0])
-        message_id = int(parts[1])
+        chat_id = int(parts[-2])
+        message_id = int(parts[-1])
         return chat_id, message_id
 
     def _process_action(self, action_callback, *args):
