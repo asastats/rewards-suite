@@ -95,6 +95,15 @@ Finally, under rewards web Python environemnt:
   python manage.py migrate
 
 
+Import GitHub issues
+--------------------
+
+.. code-block:: bash
+
+  python manage.py migrate --settings=rewardsweb.settings.development
+  python manage.py excel2db ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx --settings=rewardsweb.settings.development
+
+
 DaisyUI
 -------
 
