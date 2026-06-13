@@ -208,6 +208,45 @@ class WalletVerifyAPIView(APIView):
                     {"success": False, "error": "Invalid signature"}, status=400
                 )
 
+            # Bind the proof to the claimed identity. ``verify_signed_transaction``
+            # only confirms the signature is internally valid (against the txn's
+            # own sender or authorizing address); it does not tie that signature
+            # to ``address``. Without the check below, an attacker can request a
+            # nonce for a victim's address, sign a transaction carrying that
+            # nonce with their OWN key, and be logged in as the victim.
+            if stxn.transaction.sender != address:
+                return Response(
+                    {"success": False, "error": "Signature does not match the address"},
+                    status=400,
+                )
+
+            # Reject a (possibly forged) rekey claim. ``authorizing_address`` is
+            # attacker-controllable in the submitted transaction and cannot be
+            # trusted off-chain, so only an own-key signature is accepted. To
+            # support legitimately rekeyed accounts instead of rejecting them,
+            # confirm on-chain that ``sender`` is rekeyed to this authorizing
+            # address (algod ``account_info(sender)["auth-addr"]``) before
+            # accepting -- that reintroduces a node call for rekeyed accounts
+            # only, keeping the fast path indexer-free.
+            if (
+                stxn.authorizing_address is not None
+                and stxn.authorizing_address != stxn.transaction.sender
+            ):
+                return Response(
+                    {"success": False, "error": "Rekeyed account not supported"},
+                    status=400,
+                )
+
+            # Defense in depth: the proof must be a 0-ALGO self-payment, never a
+            # value-bearing or non-payment transaction.
+            if (
+                getattr(stxn.transaction, "type", None) != "pay"
+                or getattr(stxn.transaction, "amt", 0) != 0
+            ):
+                return Response(
+                    {"success": False, "error": "Invalid transaction"}, status=400
+                )
+
             # Check if the note contains the nonce
             note_str = (
                 stxn.transaction.note.decode("utf-8") if stxn.transaction.note else ""

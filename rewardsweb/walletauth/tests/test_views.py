@@ -274,12 +274,16 @@ class TestWalletVerifyAPIView:
         return "abc123def456"
 
     @pytest.fixture
-    def mock_signed_transaction(self, valid_nonce):
+    def mock_signed_transaction(self, valid_nonce, valid_address):
         """Create a mock signed transaction with proper note."""
         mock_stxn = mock.MagicMock(spec=SignedTransaction)
         mock_stxn.signature = "mock_signature"
         mock_stxn.transaction = mock.MagicMock()
-        mock_stxn.transaction.sender = "A" + "B" * 57
+        # The signer must be the address being authenticated (identity binding),
+        # and the proof must be a 0-ALGO self-payment.
+        mock_stxn.transaction.sender = valid_address
+        mock_stxn.transaction.type = "pay"
+        mock_stxn.transaction.amt = 0
         # Create a mock note that can be decoded
         mock_note = mock.MagicMock()
         mock_note.decode.return_value = f"{WALLET_CONNECT_NONCE_PREFIX}{valid_nonce}"
@@ -309,6 +313,101 @@ class TestWalletVerifyAPIView:
     def teardown_method(self):
         """Teardown method to stop patchers."""
         self.is_valid_address_patcher.stop()
+
+    def _verify_mocks(self, mocker, mock_wallet_nonce, mock_signed_transaction):
+        """Patch the decode/verify pipeline so policy checks are reached."""
+        mocker.patch(
+            "walletauth.views.WalletNonce.objects.get", return_value=mock_wallet_nonce
+        )
+        mocker.patch("walletauth.views.base64.b64decode", return_value=b"mock_tx_bytes")
+        mocker.patch(
+            "walletauth.views.msgpack.unpackb", return_value={"mock": "tx_dict"}
+        )
+        mocker.patch(
+            "walletauth.views.SignedTransaction.undictify",
+            return_value=mock_signed_transaction,
+        )
+        mocker.patch("walletauth.views.verify_signed_transaction", return_value=True)
+
+    def test_walletauth_walletverifyapiview_rejects_sender_address_mismatch(
+        self, view, rf, valid_address, mocker, mock_wallet_nonce, mock_signed_transaction
+    ):
+        """Reject a valid signature whose signer is not the claimed address.
+
+        Guards the authentication-bypass: an attacker requests a nonce for a
+        victim address and signs with their own key. ``verify_signed_transaction``
+        passes, but the signer differs from the address, so login must not occur.
+        """
+        mock_signed_transaction.transaction.sender = "Z" * 58
+        data = {
+            "address": valid_address,
+            "signedTransaction": "base64_encoded_tx",
+            "nonce": mock_wallet_nonce.nonce,
+        }
+        request = rf.post("/verify/", data=data, format="json")
+        self._verify_mocks(mocker, mock_wallet_nonce, mock_signed_transaction)
+        mock_login = mocker.patch("walletauth.views.login")
+
+        response = view(request)
+
+        assert response.status_code == 400
+        assert response.data == {
+            "success": False,
+            "error": "Signature does not match the address",
+        }
+        mock_wallet_nonce.mark_used.assert_not_called()
+        mock_login.assert_not_called()
+
+    def test_walletauth_walletverifyapiview_rejects_forged_rekey(
+        self, view, rf, valid_address, mocker, mock_wallet_nonce, mock_signed_transaction
+    ):
+        """Reject a transaction claiming a rekey to a different address.
+
+        ``authorizing_address`` is attacker-controllable and is not trusted
+        off-chain, so a signature against a fabricated authorizing address must
+        not authenticate the sender.
+        """
+        mock_signed_transaction.transaction.sender = valid_address
+        mock_signed_transaction.authorizing_address = "Y" * 58
+        data = {
+            "address": valid_address,
+            "signedTransaction": "base64_encoded_tx",
+            "nonce": mock_wallet_nonce.nonce,
+        }
+        request = rf.post("/verify/", data=data, format="json")
+        self._verify_mocks(mocker, mock_wallet_nonce, mock_signed_transaction)
+        mock_login = mocker.patch("walletauth.views.login")
+
+        response = view(request)
+
+        assert response.status_code == 400
+        assert response.data == {
+            "success": False,
+            "error": "Rekeyed account not supported",
+        }
+        mock_wallet_nonce.mark_used.assert_not_called()
+        mock_login.assert_not_called()
+
+    def test_walletauth_walletverifyapiview_rejects_non_payment(
+        self, view, rf, valid_address, mocker, mock_wallet_nonce, mock_signed_transaction
+    ):
+        """Reject a proof that is not a 0-ALGO payment transaction."""
+        mock_signed_transaction.transaction.sender = valid_address
+        mock_signed_transaction.transaction.type = "axfer"
+        data = {
+            "address": valid_address,
+            "signedTransaction": "base64_encoded_tx",
+            "nonce": mock_wallet_nonce.nonce,
+        }
+        request = rf.post("/verify/", data=data, format="json")
+        self._verify_mocks(mocker, mock_wallet_nonce, mock_signed_transaction)
+        mock_login = mocker.patch("walletauth.views.login")
+
+        response = view(request)
+
+        assert response.status_code == 400
+        assert response.data == {"success": False, "error": "Invalid transaction"}
+        mock_login.assert_not_called()
 
     def test_walletauth_walletverifyapiview_is_subclass_of_view(self):
         assert issubclass(WalletVerifyAPIView, View)
