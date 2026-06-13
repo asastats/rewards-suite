@@ -1,36 +1,70 @@
 {
   "__vite-optional-peer-dep:@agoralabs-sh/avm-web-provider:@txnlab/use-wallet": {
-    "file": "assets/use-wallet-BIHI7g3E.js",
+    "file": "assets/use-wallet-D28_Th7j.js",
     "name": "use-wallet",
     "src": "__vite-optional-peer-dep:@agoralabs-sh/avm-web-provider:@txnlab/use-wallet",
     "isDynamicEntry": true
   },
-  "_bowser-6lpdwbQt.js": {
-    "file": "assets/bowser-6lpdwbQt.js",
-    "name": "bowser",
+  "__vite-optional-peer-dep:@walletconnect/modal:@txnlab/use-wallet": {
+    "file": "assets/use-wallet-C2qkn1u0.js",
+    "name": "use-wallet",
+    "src": "__vite-optional-peer-dep:@walletconnect/modal:@txnlab/use-wallet",
+    "isDynamicEntry": true
+  },
+  "__vite-optional-peer-dep:@walletconnect/sign-client:@txnlab/use-wallet": {
+    "file": "assets/use-wallet-C2wpfpKa.js",
+    "name": "use-wallet",
+    "src": "__vite-optional-peer-dep:@walletconnect/sign-client:@txnlab/use-wallet",
+    "isDynamicEntry": true
+  },
+  "__vite-optional-peer-dep:@web3auth/base-provider:@txnlab/use-wallet": {
+    "file": "assets/use-wallet-BmqKEIcW.js",
+    "name": "use-wallet",
+    "src": "__vite-optional-peer-dep:@web3auth/base-provider:@txnlab/use-wallet",
+    "isDynamicEntry": true
+  },
+  "__vite-optional-peer-dep:@web3auth/base:@txnlab/use-wallet": {
+    "file": "assets/use-wallet-BCyO2iwT.js",
+    "name": "use-wallet",
+    "src": "__vite-optional-peer-dep:@web3auth/base:@txnlab/use-wallet",
+    "isDynamicEntry": true
+  },
+  "__vite-optional-peer-dep:@web3auth/modal:@txnlab/use-wallet": {
+    "file": "assets/use-wallet-CXMU0K5m.js",
+    "name": "use-wallet",
+    "src": "__vite-optional-peer-dep:@web3auth/modal:@txnlab/use-wallet",
+    "isDynamicEntry": true
+  },
+  "__vite-optional-peer-dep:@web3auth/single-factor-auth:@txnlab/use-wallet": {
+    "file": "assets/use-wallet-jQWhZX8m.js",
+    "name": "use-wallet",
+    "src": "__vite-optional-peer-dep:@web3auth/single-factor-auth:@txnlab/use-wallet",
+    "isDynamicEntry": true
+  },
+  "_es5-DpwS1tMq.js": {
+    "file": "assets/es5-DpwS1tMq.js",
+    "name": "es5",
     "imports": [
       "index.html"
     ]
   },
-  "_index-BF62KPoo.js": {
-    "file": "assets/index-BF62KPoo.js",
-    "name": "index",
-    "isDynamicEntry": true,
+  "_index-3449716b-m_VRd8xs.js": {
+    "file": "assets/index-3449716b-m_VRd8xs.js",
+    "name": "index-3449716b",
     "imports": [
       "index.html",
-      "_bowser-6lpdwbQt.js"
+      "_es5-DpwS1tMq.js"
     ],
     "dynamicImports": [
-      "node_modules/@perawallet/connect/dist/App-428f5096.js"
+      "node_modules/@perawallet/connect/dist/App-a422543c.js"
     ]
   },
-  "_index-CLJo1Ytg.js": {
-    "file": "assets/index-CLJo1Ytg.js",
-    "name": "index",
-    "isDynamicEntry": true,
+  "_index-cd5905ac-BuEM3V9F.js": {
+    "file": "assets/index-cd5905ac-BuEM3V9F.js",
+    "name": "index-cd5905ac",
     "imports": [
       "index.html",
-      "_bowser-6lpdwbQt.js"
+      "_es5-DpwS1tMq.js"
     ],
     "dynamicImports": [
       "node_modules/@blockshake/defly-connect/dist/App-58ab7d48.js"
@@ -42,36 +76,65 @@
     "src": "index.html",
     "isEntry": true,
     "dynamicImports": [
-      "_index-CLJo1Ytg.js",
+      "__vite-optional-peer-dep:@walletconnect/sign-client:@txnlab/use-wallet",
+      "__vite-optional-peer-dep:@walletconnect/modal:@txnlab/use-wallet",
+      "node_modules/@blockshake/defly-connect/dist/index.js",
       "__vite-optional-peer-dep:@agoralabs-sh/avm-web-provider:@txnlab/use-wallet",
       "node_modules/lute-connect/dist/main.esm.js",
-      "_index-BF62KPoo.js"
+      "index.html",
+      "node_modules/@perawallet/connect/dist/index.js",
+      "__vite-optional-peer-dep:@web3auth/modal:@txnlab/use-wallet",
+      "__vite-optional-peer-dep:@web3auth/base:@txnlab/use-wallet",
+      "__vite-optional-peer-dep:@web3auth/base-provider:@txnlab/use-wallet",
+      "__vite-optional-peer-dep:@web3auth/single-factor-auth:@txnlab/use-wallet"
     ]
   },
   "node_modules/@blockshake/defly-connect/dist/App-58ab7d48.js": {
-    "file": "assets/App-58ab7d48-BoQNvH2A.js",
+    "file": "assets/App-58ab7d48-BEp0DTMs.js",
     "name": "App-58ab7d48",
     "src": "node_modules/@blockshake/defly-connect/dist/App-58ab7d48.js",
     "isDynamicEntry": true,
     "imports": [
-      "_index-CLJo1Ytg.js",
       "index.html",
-      "_bowser-6lpdwbQt.js"
+      "_index-cd5905ac-BuEM3V9F.js",
+      "_es5-DpwS1tMq.js"
     ]
   },
-  "node_modules/@perawallet/connect/dist/App-428f5096.js": {
-    "file": "assets/App-428f5096-CMk5PwP5.js",
-    "name": "App-428f5096",
-    "src": "node_modules/@perawallet/connect/dist/App-428f5096.js",
+  "node_modules/@blockshake/defly-connect/dist/index.js": {
+    "file": "assets/dist-PH-5fdt7.js",
+    "name": "dist",
+    "src": "node_modules/@blockshake/defly-connect/dist/index.js",
     "isDynamicEntry": true,
     "imports": [
-      "_index-BF62KPoo.js",
       "index.html",
-      "_bowser-6lpdwbQt.js"
+      "_index-cd5905ac-BuEM3V9F.js",
+      "_es5-DpwS1tMq.js"
+    ]
+  },
+  "node_modules/@perawallet/connect/dist/App-a422543c.js": {
+    "file": "assets/App-a422543c-BoGTotuF.js",
+    "name": "App-a422543c",
+    "src": "node_modules/@perawallet/connect/dist/App-a422543c.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "index.html",
+      "_index-3449716b-m_VRd8xs.js",
+      "_es5-DpwS1tMq.js"
+    ]
+  },
+  "node_modules/@perawallet/connect/dist/index.js": {
+    "file": "assets/dist-BLJAoQAM.js",
+    "name": "dist",
+    "src": "node_modules/@perawallet/connect/dist/index.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "index.html",
+      "_index-3449716b-m_VRd8xs.js",
+      "_es5-DpwS1tMq.js"
     ]
   },
   "node_modules/lute-connect/dist/main.esm.js": {
-    "file": "assets/main.esm-D6h9GEOu.js",
+    "file": "assets/main.esm-W8YK8u9h.js",
     "name": "main.esm",
     "src": "node_modules/lute-connect/dist/main.esm.js",
     "isDynamicEntry": true
