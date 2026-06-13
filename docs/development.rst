@@ -87,7 +87,7 @@ pg_trgm extension is used for determining the similarity of text based on trigra
   postgres=# CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 
-Finally, under rewards web Python environemnt:
+Finally, under rewards web Python environment:
 
 .. code-block:: bash
 
@@ -109,7 +109,7 @@ DaisyUI
 
 Follow the instructions found
 `here <https://daisyui.com/docs/install/django/>`. One of the alternatives to **watchman**
-is **entr** (you can install it on Debain based systems with `sudo apt-get install entr`),
+is **entr** (you can install it on Debian based systems with `sudo apt-get install entr`),
 invoke the following trigger build/watch command to use it:
 
 .. code-block:: bash
@@ -136,7 +136,7 @@ After you activated the Python environment, you can compile smart contract by is
 Deploy, fund, and setup dApp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Here's a shortcat Django management command that will deploy generated smart contract on the blockchain,
+Here's a shortcut Django management command that will deploy generated smart contract on the blockchain,
 fund the related account with required ALGO, and finally set up the dApp with rewards token ID and
 claim period duration values retrieved from the environemnt variables:
 
