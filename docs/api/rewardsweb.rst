@@ -250,8 +250,8 @@
   :show-inheritance:
 
 
-:mod:`issues.config` -- Module for issue providers confirguration from environment variables
---------------------------------------------------------------------------------------------
+:mod:`issues.config` -- Module for issue providers configuration from environment variables
+-------------------------------------------------------------------------------------------
 
 .. automodule:: issues.config
   :members:
@@ -330,8 +330,8 @@
   :show-inheritance:
 
 
-:mod:`rewards.templates` -- Directory holding Smart contract frontend applicatio Django template files
-------------------------------------------------------------------------------------------------------
+:mod:`rewards.templates` -- Directory holding Smart contract frontend application Django template files
+-------------------------------------------------------------------------------------------------------
 
 .. automodule:: rewards.templates
   :members:
@@ -494,8 +494,8 @@
   :show-inheritance:
 
 
-:mod:`trackers.parser` -- Module cointaining class for parsing sociial media messages
--------------------------------------------------------------------------------------
+:mod:`trackers.parser` -- Module containing class for parsing social media messages
+-----------------------------------------------------------------------------------
 
 .. automodule:: trackers.parser
   :members:
@@ -584,8 +584,8 @@
   :show-inheritance:
 
 
-:mod:`updaters.main` -- Module containing main updating class and updaters regiustry
-------------------------------------------------------------------------------------
+:mod:`updaters.main` -- Module containing main updating class and updaters registry
+-----------------------------------------------------------------------------------
 
 .. automodule:: updaters.main
   :members:
