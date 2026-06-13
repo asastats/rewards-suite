@@ -138,7 +138,7 @@ Deploy, fund, and setup dApp
 
 Here's a shortcut Django management command that will deploy generated smart contract on the blockchain,
 fund the related account with required ALGO, and finally set up the dApp with rewards token ID and
-claim period duration values retrieved from the environemnt variables:
+claim period duration values retrieved from the environment variables:
 
 .. code-block:: bash
 

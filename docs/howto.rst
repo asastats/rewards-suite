@@ -1,7 +1,7 @@
 Howto
 =====
 
-Build documenattion
+Build documentation
 -------------------
 
 .. code-block:: bash
