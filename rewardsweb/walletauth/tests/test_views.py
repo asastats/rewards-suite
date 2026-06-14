@@ -1075,7 +1075,6 @@ class TestAllocationsSuccessfulAPIView:
     def rf(self):
         return APIRequestFactory()
 
-    @pytest.mark.django_db
     @pytest.fixture
     def admin_user(self):
         """Create an admin user for testing."""
@@ -1437,7 +1436,6 @@ class TestReclaimSuccessfulAPIView:
     def rf(self):
         return APIRequestFactory()
 
-    @pytest.mark.django_db
     @pytest.fixture
     def admin_user(self):
         """Create an admin user for testing."""

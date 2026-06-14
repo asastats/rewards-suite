@@ -70,3 +70,5 @@ LOGGING = {
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+ALLAUTH_TRUSTED_CLIENT_IP_HEADER = "X-Real-IP"
