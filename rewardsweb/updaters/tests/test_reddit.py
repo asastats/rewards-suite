@@ -251,7 +251,7 @@ class TestUpdatersRedditRedditUpdater:
         mock_ids.return_value = ("abc123", None)
         # Create exception using string format (simpler)
         exception = RedditAPIException(
-            "RATELIMIT", "You are doing that too much. Try again in 5 minutes.", ""
+            [["RATELIMIT", "You are doing that too much. Try again in 5 minutes.", ""]]
         )
         # Mock the Reddit client to raise an exception
         mock_client = mocker.MagicMock()
