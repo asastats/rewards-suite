@@ -318,8 +318,7 @@ class TestUtilsImportersHelperFunctions:
         assert mocked_get_object_or_404.call_count == len(REWARDS_COLLECTION) * 3
         assert mocked_reward_get.call_count == len(REWARDS_COLLECTION) * 3
         calls = [
-            mocker.call(type=reward_type, level=2, amount=60000, active=True),
-            mocker.call(type=reward_type, level=2, amount=70000, active=True),
+            mocker.call(type=reward_type, level=2, amount=20000, active=True),
         ]
         mocked_reward_create.assert_has_calls(calls, any_order=True)
         assert mocked_reward_create.call_count == 2
