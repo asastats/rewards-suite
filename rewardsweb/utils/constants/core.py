@@ -16,14 +16,14 @@ HANDLE_EXCEPTIONS = ("RR", "Di")
 CONTRIBUTIONS_TAIL_SIZE = 5
 
 REWARDS_COLLECTION = (
-    ("[F] Feature Request", 30000, 60000, 135000),
-    ("[B] Bug Report", 30000, 60000, 135000),
-    ("[AT] Admin Task", 35000, 70000, 150000),
-    ("[CT] Content Task", 100000, 200000, 300000),
-    ("[IC] Issue Creation", 30000, 60000, 135000),
-    ("[TWR] Twitter Post", 30000, 60000, 135000),
-    ("[D] Development", 100000, 200000, 300000),
-    ("[ER] Ecosystem Research", 50000, 100000, 200000),
+    ("[F] Feature Request", 10000, 20000, 40000),
+    ("[B] Bug Report", 10000, 20000, 40000),
+    ("[AT] Admin Task", 10000, 20000, 40000),
+    ("[CT] Content Task", 10000, 20000, 40000),
+    ("[IC] Issue Creation", 10000, 20000, 40000),
+    ("[TWR] Twitter Post", 10000, 20000, 40000),
+    ("[D] Development", 25000, 50000, 100000),
+    ("[ER] Ecosystem Research", 25000, 50000, 75000),
 )
 
 DISCORD_EMOJIS = {
