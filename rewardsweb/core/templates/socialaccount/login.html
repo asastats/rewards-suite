@@ -67,7 +67,7 @@
         </div>
 
         <!-- Login Form -->
-        <form method="post" class="space-y-6">
+        <form method="post" class="space-y-6" hx-boost="false">
           {% csrf_token %}
 
           {% if form.non_field_errors %}
