@@ -10,7 +10,7 @@
               {% if provider.id == 'github' %}border-base-content text-base-content hover:bg-base-content hover:text-white{% endif %}
               {% if provider.id == 'discord' %}border-[#5865F2] text-[#5865F2] hover:bg-[#5865F2] hover:text-white{% endif %}
               {% if provider.id == 'reddit' %}border-[#FF5700] text-[#FF5700] hover:bg-[#FF5700] hover:text-white{% endif %}
-              {% if provider.id == 'twitter_oauth2' %}border-base-content text-base-content hover:bg-base-content hover:text-white{% endif %}">
+              {% if provider.id == 'twitter' %}border-base-content text-base-content hover:bg-base-content hover:text-white{% endif %}">
       
       <div class="flex items-center gap-3">
         {% if provider.id == "google" %}
@@ -21,7 +21,7 @@
           <i class="fab fa-discord text-xl"></i>
         {% elif provider.id == "reddit" %}
           <i class="fab fa-reddit text-xl"></i>
-        {% elif provider.id == "twitter_oauth2" %}
+        {% elif provider.id == "twitter" %}
           <i class="fab fa-x-twitter text-xl"></i>
         {% endif %}
         
