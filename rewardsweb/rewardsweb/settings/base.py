@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.github",
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.reddit",
-    "allauth.socialaccount.providers.twitter_oauth2",
+    "allauth.socialaccount.providers.twitter",
     "adrf",
     "rest_framework",
     "captcha",
@@ -151,11 +151,12 @@ SOCIALACCOUNT_PROVIDERS = {
             "key": get_env_variable("DISCORD_PUBLIC_KEY", ""),
         }
     },
-    # https://developer.x.com/en/portal/projects-and-apps
-    "twitter_oauth2": {
+    # https://developer.x.com/en/portal/projects-and-apps -- OAuth 1.0a Consumer
+    # Keys, not OAuth 2.0 (paywalled); see docs/logbook.md
+    "twitter": {
         "APP": {
-            "client_id": get_env_variable("TWITTER_CLIENT_ID", ""),
-            "secret": get_env_variable("TWITTER_SECRET", ""),
+            "client_id": get_env_variable("TWITTER_API_KEY", ""),
+            "secret": get_env_variable("TWITTER_API_KEY_SECRET", ""),
             "key": "",
         }
     },
