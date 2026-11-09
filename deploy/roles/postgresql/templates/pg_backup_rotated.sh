@@ -127,9 +127,9 @@ function perform_backups()
 # MONTHLY BACKUPS
 
 DAY_OF_MONTH=`date +%d`
-HOUR_OF_DAY=`date +%H`
+HOUR_OF_DAY=`date +%H`  # zero-padded: compare with -eq, never =
 
-if [ $DAY_OF_MONTH -eq 1 ] && [ $HOUR_OF_DAY = 3 ];
+if [ $DAY_OF_MONTH -eq 1 ] && [ $HOUR_OF_DAY -eq 3 ];
 then
 	# Delete all expired monthly directories
 	find $BACKUP_DIR -maxdepth 1 -name "*-monthly" -exec rm -rf '{}' ';'
@@ -144,7 +144,7 @@ fi
 DAY_OF_WEEK=`date +%u` #1-7 (Monday-Sunday)
 EXPIRED_DAYS=`expr $((($WEEKS_TO_KEEP * 7) + 1))`
 
-if [ $DAY_OF_WEEK = $DAY_OF_WEEK_TO_KEEP ] && [ $HOUR_OF_DAY = 4 ];
+if [ $DAY_OF_WEEK = $DAY_OF_WEEK_TO_KEEP ] && [ $HOUR_OF_DAY -eq 4 ];
 then
 	# Delete all expired weekly directories
 	find $BACKUP_DIR -maxdepth 1 -mtime +$EXPIRED_DAYS -name "*-weekly" -exec rm -rf '{}' ';'
@@ -156,7 +156,7 @@ fi
 
 # DAILY BACKUPS
 
-if [ $HOUR_OF_DAY = $HOUR_OF_DAY_TO_KEEP ];
+if [ $HOUR_OF_DAY -eq $HOUR_OF_DAY_TO_KEEP ];
 then
 	# Delete all expired daily directories
 	find $BACKUP_DIR -maxdepth 1 -mtime +$DAYS_TO_KEEP -name "*-daily" -exec rm -rf '{}' ';'
